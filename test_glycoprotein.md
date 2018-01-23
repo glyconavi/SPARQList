@@ -8,7 +8,7 @@
  
 ## Endpoint
 
-http://sparql.glyconavi.org/sparql
+http://sparql.glyconavi.org/sparql/
 
 
 ## Output
