@@ -35,6 +35,7 @@ PREFIX up: <http://purl.uniprot.org/core/>
 
 SELECT ?pos ?order ?from ?to  ?wurcs ?glycan_image ?mod_wurcs ?mod_glycan_image
 FROM <http://glyconavi.org/database/GlycoAbun>
+FROM <http://glyconavi.org/database/glycoabun>
 WHERE {
 
 # abundance
