@@ -13,7 +13,7 @@
 
 ## Endpoint
 
-https://sparql.glyconavi.org/sparql
+https://sparql.glyconavi.org/sparql/
 
 ## `result`
 
