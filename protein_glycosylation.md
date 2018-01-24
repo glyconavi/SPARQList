@@ -125,8 +125,8 @@ array = {
 return array;
 
   },
-  text({data}) {
-      return data.json("\n");
+  text({array}) {
+      return array.json("\n");
     }
 
 })
