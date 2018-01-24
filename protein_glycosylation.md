@@ -1,4 +1,4 @@
-# test_protein_ptm_json
+# protein_glycosylation
 
 ## Parameters
 
@@ -60,9 +60,9 @@ ORDER BY ?begin
 ({
    json ({result}) { 
 
- var id = "";
- var url  = "";
- var sequence = "";
+var id = "";
+var url  = "";
+var sequence = "";
 var organism = "";
 var name = "";
 var gene = "";
@@ -72,11 +72,7 @@ var end = "";
 var annotation = "";
 var description = "";
 var features = [];
-
-//var array = [];
 var array = {};
-
-var data = {};
 
 result.results.bindings.map((row) => {
              id = row.up.value , 
@@ -85,23 +81,7 @@ result.results.bindings.map((row) => {
             organism = row.organism.value , 
             name = row.name.value , 
             gene = row.genename.value 
-
-data = {
-   "id" : id ,
-    "url" : url,
-    "sequence" : sequence,
-    "gene" : gene,
-    "organism" : organism,
-    "name" : name
-};
-
-
-
 });
-
-//array.push(data);
-
-
 
 result.results.bindings.map((row) => {
              id = row.up.value , 
@@ -128,12 +108,10 @@ var data =
       "annotation" : annotation
 };
 
-//features.push({ "features": data } );
+
 features.push( data );
 
     });
-
-//array.push({ "features": features } );
 
 array = { 
    "id" : id ,
@@ -144,8 +122,6 @@ array = {
     "name" : name,
     "features": features  };
 
-
-//return data;
 return array;
 
   },
