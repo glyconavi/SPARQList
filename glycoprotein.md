@@ -8,7 +8,7 @@
  
 ## Endpoint
 
-http://sparql.uniprot.org/sparql/
+https://sparql.uniprot.org/sparql/
 
 ## `result` 
 
