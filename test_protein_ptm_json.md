@@ -73,7 +73,9 @@ var annotation = "";
 var description = "";
 var features = [];
 
-var array = [];
+//var array = [];
+var array = {};
+
 var data = {};
 
 result.results.bindings.map((row) => {
@@ -97,7 +99,7 @@ data = {
 
 });
 
-array.push(data);
+//array.push(data);
 
 
 
@@ -115,8 +117,8 @@ result.results.bindings.map((row) => {
             description = row.description.value
 //    });
 
-var data = [{
-    "features" : [{
+var data =
+    {
       "type" : "Carbohyd",
       "category" : "PTM",
       "description" : description,
@@ -124,12 +126,24 @@ var data = [{
       "end": end,
       "color": "#00F5B8",
       "annotation" : annotation
-    }]
-  }];
+};
 
-array.push(data);
+//features.push({ "features": data } );
+features.push( data );
 
     });
+
+//array.push({ "features": features } );
+
+array = { 
+   "id" : id ,
+    "url" : url,
+    "sequence" : sequence,
+    "gene" : gene,
+    "organism" : organism,
+    "name" : name,
+    "features": features  };
+
 
 //return data;
 return array;
