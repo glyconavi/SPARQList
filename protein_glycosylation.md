@@ -99,7 +99,7 @@ result.results.bindings.map((row) => {
 
 var data =
     {
-      "type" : "Carbohyd",
+      "type" : "Glycoform",
       "category" : "PTM",
       "description" : description,
       "begin": begin,
