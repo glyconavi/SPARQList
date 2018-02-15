@@ -10,6 +10,9 @@
   * default: GA_1
   * examples: 
 
+* `uid` Uniprot ID
+  * default: P01218
+  * examples: 
 
 ## Endpoint
 
@@ -45,6 +48,10 @@ WHERE {
 ?br sio:has-component-part ?rc .
 ?rc sio:has-component-part ?pep .
 ?pep ga:uniprot_id ?uniprotid .
+VALUES ?uniprotid { "P01218" }
+# P01218
+#VALUES ?uniprotid { "{{params.uid}}" }
+
 ?rc ga:has_abundance ?ga .
 ?ga dcterms:identifier ?gaid .
 
