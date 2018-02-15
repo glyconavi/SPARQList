@@ -1,18 +1,10 @@
-# glycoform
+# protein_glycoform
 
 ## Parameters
 
-* `gfid` Source glycoform ID
-  * default: GF_6
-  * examples: 
-
-* `gaid` Source abundance ID
-  * default: GA_1
-  * examples: 
-
-* `uid` Uniprot ID
+* `up` Source UniProt ID
   * default: P01218
-  * examples: 
+  * examples: P05556, P02765, P17301, P35222
 
 ## Endpoint
 
@@ -48,9 +40,9 @@ WHERE {
 ?br sio:has-component-part ?rc .
 ?rc sio:has-component-part ?pep .
 ?pep ga:uniprot_id ?uniprotid .
-VALUES ?uniprotid { "P01218" }
+# VALUES ?uniprotid { "P01218" }
 # P01218
-#VALUES ?uniprotid { "{{params.uid}}" }
+VALUES ?uniprotid { "{{params.up}}" }
 
 ?rc ga:has_abundance ?ga .
 ?ga dcterms:identifier ?gaid .
@@ -113,8 +105,8 @@ order by ?pos
   json({result}) {
     return result.results.bindings.map((row) => {
          return {
-         "GlycoSample ID":row.gsid.value , 
-         "Uniprot ID":row.uniprotid.value , 
+         "GlycoSample":row.gsid.value , 
+         "Uniprot":row.uniprotid.value , 
 			"site": row.pos.value , 
 //			"order": row.order.value , 
 			"from": row.from.value , 
