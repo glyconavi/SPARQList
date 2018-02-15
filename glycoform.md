@@ -65,7 +65,7 @@ OPTIONAL {
 
 # glycan structure
 ?gi sio:has-part ?gcomp .
-?gcomp chebi:32854 ?glycan .
+?glycan chebi:32854 ?gcomp .
 ?glycan ga:wurcs ?wurcs .
 ?glycan foaf:depiction ?glycan_image .
 
