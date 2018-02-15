@@ -19,7 +19,8 @@ https://sparql.glyconavi.org/sparql/
 
 
 ```sparql
-# http://glyconavi.org/glycobio/BR_2/RC_2/GA_1/GF_6	
+# <http://glyconavi.org/glycobio/BR_2/RC_2/GA_1/GF_6>
+# <http://glyconavi.org/glycobio/BR_1/RC_1/GA_1/GF_1>
 
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -33,15 +34,28 @@ PREFIX chebi: <http://bio2rdf.org/chebi:>
 PREFIX faldo: <http://biohackathon.org/resource/faldo#>
 PREFIX up: <http://purl.uniprot.org/core/>
 
-SELECT ?pos ?order ?from ?to  ?wurcs ?glycan_image ?mod_wurcs ?mod_glycan_image
-FROM <http://glyconavi.org/database/GlycoAbun>
+SELECT distinct ?pos ?order ?from ?to  ?wurcs ?glycan_image ?mod_wurcs ?mod_glycan_image ?glytoucan ?gsid ?uniprotid
+#FROM <http://glyconavi.org/database/GlycoAbun>
 FROM <http://glyconavi.org/database/glycoabun>
 WHERE {
+
+?gs glycan:has_resource_entry ?br .
+?gs gs:glycosample_id ?gsid .
+
+?br sio:has-component-part ?rc .
+?rc sio:has-component-part ?pep .
+?pep ga:uniprot_id ?uniprotid .
+?rc ga:has_abundance ?ga .
+?ga dcterms:identifier ?gaid .
+
+#VALUES ?gaid { "{{params.gaid}}" }
+
+?ga sio:has-direct-part ?gf .
 
 # abundance
 ?gf sio:has-proper-part ?gi .
 ?gf ga:order ?order .
-VALUES ?gf { <http://glyconavi.org/glycobio/BR_2/RC_2/GA_1/GF_6> }
+#VALUES ?gf { <http://glyconavi.org/glycobio/BR_1/RC_1/GA_1/GF_1> }
 
 #glycosylation site
 OPTIONAL {
@@ -56,13 +70,21 @@ OPTIONAL {
 ?glycan ga:wurcs ?wurcs .
 ?glycan foaf:depiction ?glycan_image .
 
+
 OPTIONAL {
 ?glycan ga:modified ?mod .
 ?mod ga:modified_glycan ?mod_glycan .
 ?mod_glycan ga:wurcs ?mod_wurcs .
 ?mod_glycan foaf:depiction ?mod_glycan_image .
 ?mod ga:method ?method .
+
+OPTIONAL {
+?mod_glycan dcterms:identifier ?glytoucan .
 }
+
+}
+
+
 
 #?method rdf:type ?method_type .
 # abundance ratio
@@ -75,6 +97,7 @@ OPTIONAL {
 }
 
 }
+order by ?pos
 ```
 
 ## Output
@@ -83,10 +106,13 @@ OPTIONAL {
   json({result}) {
     return result.results.bindings.map((row) => {
          return {
-//			"pos": row.pos.value , 
+         "GlycoSample ID":row.gsid.value , 
+         "Uniprot ID":row.uniprotid.value , 
+			"site": row.pos.value , 
 //			"order": row.order.value , 
 			"from": row.from.value , 
 			"to": row.to.value , 
+            "glytoucan":row.glytoucan.value , 
 
 			"wurcs": row.wurcs.value,
 			"glycan_image": row.glycan_image.value 
