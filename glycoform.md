@@ -1,8 +1,8 @@
-# protein_glycoform
+# Glycoform
 
 ## Parameters
 
-* `up` Source UniProt ID
+* `id` Source UniProt ID
   * default: P01218
   * examples: P05556, P02765, P17301, P35222
 
@@ -14,8 +14,6 @@ https://sparql.glyconavi.org/sparql/
 
 
 ```sparql
-# <http://glyconavi.org/glycobio/BR_2/RC_2/GA_1/GF_6>
-# <http://glyconavi.org/glycobio/BR_1/RC_1/GA_1/GF_1>
 
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -29,100 +27,140 @@ PREFIX chebi: <http://bio2rdf.org/chebi:>
 PREFIX faldo: <http://biohackathon.org/resource/faldo#>
 PREFIX up: <http://purl.uniprot.org/core/>
 
-SELECT distinct ?pos ?order ?from ?to  ?wurcs ?glycan_image ?mod_wurcs ?mod_glycan_image ?glytoucan ?gsid ?uniprotid
-#FROM <http://glyconavi.org/database/GlycoAbun>
-FROM <http://glyconavi.org/database/glycoabun>
+SELECT distinct ( ?Upos  )AS ?pos ?order ?from ?to  ?wurcs ?glycan_image ?mod_wurcs ?mod_glycan_image ?glytoucan ?gsid ?uniprotid ?seq ( ?Apos ) as ?Author_site 
+
+FROM <http://glyconavi.org/database/glycoabun/20180221>
 WHERE {
 
-?gs glycan:has_resource_entry ?br .
-?gs gs:glycosample_id ?gsid .
-
-?br sio:has-component-part ?rc .
-?rc sio:has-component-part ?pep .
-?pep ga:uniprot_id ?uniprotid .
-# VALUES ?uniprotid { "P01218" }
-# P01218
-VALUES ?uniprotid { "{{params.up}}" }
-
-?rc ga:has_abundance ?ga .
-?ga dcterms:identifier ?gaid .
-
-#VALUES ?gaid { "{{params.gaid}}" }
-
-?ga sio:has-direct-part ?gf .
-
-# abundance
-?gf sio:has-proper-part ?gi .
-?gf ga:order ?order .
-#VALUES ?gf { <http://glyconavi.org/glycobio/BR_1/RC_1/GA_1/GF_1> }
-
-#glycosylation site
-OPTIONAL {
-?gf sio:is-covalently-connected-to ?loc .
-?loc faldo:begin ?begin .
-?begin faldo:position ?pos .
-}
-
-# glycan structure
-?gi sio:has-part ?gcomp .
-?glycan chebi:32854 ?gcomp .
-?glycan ga:wurcs ?wurcs .
-?glycan foaf:depiction ?glycan_image .
+    VALUES ?uniprotid { "{{params.id}}" }
 
 
-OPTIONAL {
-?glycan ga:modified ?mod .
-?mod ga:modified_glycan ?mod_glycan .
-?mod_glycan ga:wurcs ?mod_wurcs .
-?mod_glycan foaf:depiction ?mod_glycan_image .
-?mod ga:method ?method .
+    ?gs glycan:has_resource_entry ?br .
+    ?gs gs:glycosample_id ?gsid .
+    ?br sio:has-component-part ?rc .
+    ?rc sio:has-component-part ?pep .
+    ?pep ga:aa_sequence ?seq .
+    ?pep ga:uniprot_id ?uniprotid .
 
-OPTIONAL {
-?mod_glycan dcterms:identifier ?glytoucan .
-}
+    ?rc ga:has_abundance ?ga .
+    ?ga dcterms:identifier ?gaid .
+    ?ga sio:has-direct-part ?gf .
 
-}
+    # abundance
+    ?gf sio:has-proper-part ?gi .
+    ?gf ga:order ?order .
+
+    #glycosylation site
+    OPTIONAL {
+        ?gf sio:is-covalently-connected-to ?loc .
+        ?loc faldo:location ?beginA .
+        ?loc faldo:location ?beginU .
+        ?beginA faldo:position ?Apos .
+        ?beginU faldo:position ?Upos .
+        ?beginA rdf:type <http://glyconavi.org/glyabun/AuthorPosition> .
+        ?beginU rdf:type faldo:ExactPosition .
+    }
+
+    # glycan structure
+    ?gi sio:has-part ?gcomp .
+    ?glycan chebi:32854 ?gcomp .
+    ?glycan ga:wurcs ?wurcs .
+    ?glycan foaf:depiction ?glycan_image .
 
 
+    OPTIONAL {
+        ?glycan ga:modified ?mod .
+        ?mod ga:modified_glycan ?mod_glycan .
+        ?mod_glycan ga:wurcs ?mod_wurcs .
+        ?mod_glycan foaf:depiction ?mod_glycan_image .
+        ?mod ga:method ?method .
 
-#?method rdf:type ?method_type .
-# abundance ratio
-OPTIONAL {
-?gi exterms:percentage ?par .
-?par ga:from ?par_from .
-?par_from sio:has-value ?from .
-?par ga:to ?par_to .
-?par_to sio:has-value ?to .
-}
+        OPTIONAL {
+            ?mod_glycan dcterms:identifier ?glytoucan .
+        }
+
+    }
+
+    # abundance ratio
+    OPTIONAL {
+        ?gi exterms:percentage ?par .
+        ?par ga:from ?par_from .
+        ?par_from sio:has-value ?from .
+        ?par ga:to ?par_to .
+        ?par_to sio:has-value ?to .
+    }
 
 }
-order by ?pos
+order by ?Upos
 ```
 
 ## Output
+
 ```javascript
 ({
   json({result}) {
-    return result.results.bindings.map((row) => {
-         return {
-         "GlycoSample":row.gsid.value , 
-         "Uniprot":row.uniprotid.value , 
-			"site": row.pos.value , 
-//			"order": row.order.value , 
-			"from": row.from.value , 
-			"to": row.to.value , 
-            "glytoucan":row.glytoucan.value , 
 
-			"wurcs": row.wurcs.value,
-			"glycan_image": row.glycan_image.value 
-//			"mod_wurcs": row.mod_wurcs.value , 
-//			"mod_glycan_image": row.mod_glycan_image.value
-      }
-    });
+
+  var uniprotid = "";
+  var sample = "";
+  var sequence = "" ;
+  var begin = "";
+  var end = "";
+  var pos = "";
+  var authorsite = "";
+  var wurcs = "";
+  var glyimg = "";
+  var glytoucanid = "";
+  var from = "";
+  var to = "" ;
+  var features = [];
+  var array = {};
+
+
+  result.results.bindings.map((row) => {
+
+        uniprotid = row.uniprotid.value ,
+        sample = row.gsid.value ,
+        sequence = row.seq.value ,
+        site = row.pos.value ,
+        glytoucanid  = row.glytoucan.value ,
+        wurcs = row.wurcs.value ,
+        glyimg = row.glycan_image.value,
+        from = row.from.value,
+        to = row.to.value,
+       authorsite = row.Author_site.value
+
+        var data = {
+              "type" : "Glycoform",
+              "category" : "PTM",
+              "site" : site ,
+              "author site" : authorsite ,
+              "from" : from,
+              "to" : to ,
+              "GlyTouCanID" : glytoucanid,
+              "WURCS" : wurcs,
+              "glycan_image" : glyimg
+        };
+
+        features.push(data);
+  });
+
+  array = {
+        "id" : uniprotid ,
+        "sample" : sample,
+        "sequence" : sequence,
+        "features" : features
+  };
+
+  return array;
+
+
   },
-	text({result}) {
-		return result.results.bindings.map(row => row.value).join("\n");
+	text({array}) {
+		return array.json("\n");
 	}
 })
+
 ```
+
 
