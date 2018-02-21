@@ -163,8 +163,10 @@ WHERE {
   });
 
   array = {
-        "uniprot id" : uniprotid ,
         "sample id" : sample,
+		"br id" : brid,
+        "rc id" : rcid,
+		"uniprot id" : uniprotid ,
         "br id" : brid,
         "rc id" : rcid,
         "sequence" : sequence,
