@@ -1,10 +1,10 @@
-# Glycoform
+# Glycoform: GlycoNAVI  -GlycoAbun
 
 ## Parameters
 
-* `id` Source UniProt ID
-  * default: P01218
-  * examples: P05556, P02765, P17301, P35222
+* `rcid` Source RC ID
+  * default: RC_1
+  * examples: 
 
 ## Endpoint
 
@@ -17,33 +17,46 @@ https://sparql.glyconavi.org/sparql/
 
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
 PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX void: <http://rdfs.org/ns/void#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX glycan: <http://purl.jp/bio/12/glyco/glycan#>
-PREFIX sio: <http://semanticscience.org/resource/>
+PREFIX up: <http://purl.uniprot.org/core/>
+PREFIX faldo: <http://biohackathon.org/resource/faldo#>
+PREFIX UO: <http://purl.obolibrary.org/obo/>
 PREFIX gs: <http://glyconavi.org/glycosample/>
 PREFIX ga: <http://glyconavi.org/glyabun/>
-PREFIX exterms: <http://www.example.org/terms/>
+PREFIX gb: <http://glyconavi.org/glycobio/>
+PREFIX sio: <http://semanticscience.org/resource/>
 PREFIX chebi: <http://bio2rdf.org/chebi:>
-PREFIX faldo: <http://biohackathon.org/resource/faldo#>
-PREFIX up: <http://purl.uniprot.org/core/>
+PREFIX exterms: <http://www.example.org/terms/>
+PREFIX pav:   <http://purl.org/pav/>
+PREFIX dcat:  <http://www.w3.org/ns/dcat#>
 
-SELECT distinct ( ?Upos  )AS ?pos ?order ?from ?to  ?wurcs ?glycan_image ?mod_wurcs ?mod_glycan_image ?glytoucan ?gsid ?uniprotid ?seq ( ?Apos ) as ?Author_site 
+SELECT distinct ( ?Upos  )AS ?pos ?order ?from ?to  ?wurcs ?glycan_image ?mod_wurcs ?mod_glycan_image ?glytoucan ?gsid ?uniprotid ?seq ( ?Apos ) as ?Author_site  ?brid ?rcid
 
 FROM <http://glyconavi.org/database/glycoabun/20180221>
 WHERE {
 
-    VALUES ?uniprotid { "{{params.id}}" }
-
-
+#    VALUES ?uniprotid { "{{params.rcid}}" }
+    VALUES ?rcid { "{{params.rcid}}" }
+    
     ?gs glycan:has_resource_entry ?br .
+    ?br gb:brid ?brid .
     ?gs gs:glycosample_id ?gsid .
     ?br sio:has-component-part ?rc .
+    ?rc gb:rcid ?rcid .
     ?rc sio:has-component-part ?pep .
     ?pep ga:aa_sequence ?seq .
     ?pep ga:uniprot_id ?uniprotid .
 
     ?rc ga:has_abundance ?ga .
-    ?ga dcterms:identifier ?gaid .
+#    ?ga dcterms:identifier ?gaid .
     ?ga sio:has-direct-part ?gf .
 
     # abundance
@@ -91,7 +104,7 @@ WHERE {
     }
 
 }
-order by ?Upos
+# order by ?Apos
 ```
 
 ## Output
@@ -104,6 +117,8 @@ order by ?Upos
   var uniprotid = "";
   var sample = "";
   var sequence = "" ;
+  var brid = "";
+  var rcid = "";
   var begin = "";
   var end = "";
   var pos = "";
@@ -121,6 +136,8 @@ order by ?Upos
 
         uniprotid = row.uniprotid.value ,
         sample = row.gsid.value ,
+        brid = row.brid.value ,
+        rcid = row.rcid.value ,
         sequence = row.seq.value ,
         site = row.pos.value ,
         glytoucanid  = row.glytoucan.value ,
@@ -146,8 +163,10 @@ order by ?Upos
   });
 
   array = {
-        "id" : uniprotid ,
-        "sample" : sample,
+        "uniprot id" : uniprotid ,
+        "sample id" : sample,
+        "br id" : brid,
+        "rc id" : rcid,
         "sequence" : sequence,
         "features" : features
   };
