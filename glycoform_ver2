@@ -119,8 +119,8 @@ order by ?pos
         begin = row.pos.value ,
         end = begin ,
         glytoucanid  = row.glytoucan.value ,
-        wurcs = row.wurcs.value ,
-        glyimg = row.glycan_image.value,
+        wurcs = row.mod_wurcs.value ,
+        glyimg = row.mod_glycan_image.value,
         from = row.from.value,
         to = row.to.value
 
