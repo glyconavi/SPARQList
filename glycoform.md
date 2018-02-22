@@ -141,8 +141,8 @@ WHERE {
         sequence = row.seq.value ,
         site = row.pos.value ,
         glytoucanid  = row.glytoucan.value ,
-        wurcs = row.wurcs.value ,
-        glyimg = row.glycan_image.value,
+        wurcs = row.mod_wurcs.value ,
+        glyimg = row.mod_glycan_image.value,
         from = row.from.value,
         to = row.to.value,
        authorsite = row.Author_site.value
