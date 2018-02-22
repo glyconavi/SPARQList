@@ -38,14 +38,14 @@ PREFIX exterms: <http://www.example.org/terms/>
 PREFIX pav:   <http://purl.org/pav/>
 PREFIX dcat:  <http://www.w3.org/ns/dcat#>
 
-SELECT distinct ( ?Upos  )AS ?pos ?order ?from ?to  ?wurcs ?glycan_image ?mod_wurcs ?mod_glycan_image ?glytoucan ?gsid ?uniprotid ?seq ( ?Apos ) as ?Author_site  ?brid ?rcid
+SELECT distinct ( ?Upos  )AS ?pos ?order ?from ?to  ?wurcs ?glycan_image ?mod_wurcs ?mod_glycan_image ?glytoucan ?gsid ?uniprotid ?seq ( ?Apos ) as ?Author_site  ?brid ?rcid #?mod_glycan_lable
 
 FROM <http://glyconavi.org/database/glycoabun/20180221>
 WHERE {
 
 #    VALUES ?uniprotid { "{{params.rcid}}" }
     VALUES ?rcid { "{{params.rcid}}" }
-    
+
     ?gs glycan:has_resource_entry ?br .
     ?br gb:brid ?brid .
     ?gs gs:glycosample_id ?gsid .
@@ -86,11 +86,17 @@ WHERE {
         ?mod ga:modified_glycan ?mod_glycan .
         ?mod_glycan ga:wurcs ?mod_wurcs .
         ?mod_glycan foaf:depiction ?mod_glycan_image .
+
         ?mod ga:method ?method .
 
         OPTIONAL {
             ?mod_glycan dcterms:identifier ?glytoucan .
         }
+
+#        OPTIONAL {
+#            ?mod_glycan rdfs:label ?mod_glycan_lable .
+#        }
+
 
     }
 
@@ -105,6 +111,7 @@ WHERE {
 
 }
 # order by ?Apos
+
 ```
 
 ## Output
@@ -125,6 +132,7 @@ WHERE {
   var authorsite = "";
   var wurcs = "";
   var glyimg = "";
+ // var modGlycanLable = "";
   var glytoucanid = "";
   var from = "";
   var to = "" ;
@@ -143,6 +151,7 @@ WHERE {
         glytoucanid  = row.glytoucan.value ,
         wurcs = row.mod_wurcs.value ,
         glyimg = row.mod_glycan_image.value,
+//        modGlycanLable = row.mod_glycan_lable.value,
         from = row.from.value,
         to = row.to.value,
        authorsite = row.Author_site.value
@@ -156,6 +165,7 @@ WHERE {
               "to" : to ,
               "GlyTouCanID" : glytoucanid,
               "WURCS" : wurcs,
+//              "Label" : modGlycanLable,
               "glycan_image" : glyimg
         };
 
