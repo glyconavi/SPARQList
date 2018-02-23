@@ -38,7 +38,7 @@ PREFIX exterms: <http://www.example.org/terms/>
 PREFIX pav:   <http://purl.org/pav/>
 PREFIX dcat:  <http://www.w3.org/ns/dcat#>
 
-SELECT distinct ?gf ( ?Upos  )AS ?pos ?order ?from ?to  ?wurcs ?glycan_image ?mod_wurcs ?mod_glycan_image ?glytoucan ?gsid ?uniprotid ?seq ( ?Apos ) as ?Author_site  ?brid ?rcid ?glytoucanURL ?mod_glycan_label
+SELECT distinct ( ?Upos  )AS ?pos ?order ?from ?to  ?wurcs ?glycan_image ?mod_wurcs ?mod_glycan_image ?glytoucan ?gsid ?uniprotid ?seq ( ?Apos ) as ?Author_site  ?brid ?rcid ?glytoucanURL ?mod_glycan_label
 
 FROM <http://glyconavi.org/database/glycoabun/20180221>
 WHERE {
@@ -109,7 +109,7 @@ WHERE {
     }
 
 }
-# order by ?Apos
+ order by ?pos
 
 
 ```
@@ -156,7 +156,7 @@ WHERE {
         from = row.from.value,
         to = row.to.value,
        authorsite = row.Author_site.value ,
-       modGlycanLabel = row.mod_glycan_label
+       modGlycanLabel = row.mod_glycan_label.value
 
         var data = {
               "type" : "Glycoform",
