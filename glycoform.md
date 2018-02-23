@@ -74,11 +74,11 @@ WHERE {
     }
 
     # glycan structure
+
     ?gi sio:has-part ?gcomp .
     ?glycan chebi:32854 ?gcomp .
     ?glycan ga:wurcs ?wurcs .
     ?glycan foaf:depiction ?glycan_image .
-
 
     OPTIONAL {
         ?glycan ga:modified ?mod .
