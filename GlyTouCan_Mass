@@ -16,9 +16,10 @@ https://ts.glytoucan.org/sparql
 ```sparql
 PREFIX glycan: <http://purl.jp/bio/12/glyco/glycan#>
 PREFIX glytoucan:  <http://www.glytoucan.org/glyco/owl/glytoucan#>
-SELECT DISTINCT ?mass ?AccessionNumber ?Entry
+SELECT DISTINCT ?mass ?AccessionNumber ?Entry ?wurcs
 FROM <http://rdf.glytoucan.org/mass>
 FROM <http://rdf.glytoucan.org/core>
+FROM <http://rdf.glytoucan.org/sequence/wurcs>
 WHERE{
     ?saccharide glytoucan:has_primary_id ?AccessionNumber .
     ?saccharide glycan:has_resource_entry ?ResourceEntry .
@@ -27,6 +28,11 @@ WHERE{
     ?d_mass a <http://www.glytoucan.org/glyco/owl/glytoucan#derivatized_mass> .
     ?d_mass glytoucan:has_mass ?mass .
      FILTER(?mass > {{params.min}}  && ?mass < {{params.max}})
+     
+       ?saccharide a ?sclass;
+  	   glycan:has_glycosequence ?gseq.
+      ?gseq a ?gsclass.
+      ?gseq glycan:has_sequence ?wurcs.
 }
 ```
 ## Output
@@ -37,12 +43,13 @@ WHERE{
          return {
             "AccessionNumber": row.AccessionNumber.value , 
             "Entry":row.Entry.value , 
+            "WURCS":row.wurcs.value , 
             "Mass": row.mass.value
       }
     });
   },
   text({result}) {
-    return result.results.bindings.map(row).join("\n");
+    return result.results.bindings.map(row).json("\n");
   }
 })
 ```
