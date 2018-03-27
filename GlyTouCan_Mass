@@ -1,0 +1,48 @@
+#GlyTouCan AccessionNumber and monoisotopic molecular weight
+
+## Parameters
+
+* `max` Maximum monoisotopic molecular weight
+  * default: 1105.36
+* `min` Maximum monoisotopic molecular weight
+  * default: 1105.34
+
+## Endpoint
+
+https://ts.glytoucan.org/sparql
+
+## `result` mass AccessionNumber
+
+```sparql
+PREFIX glycan: <http://purl.jp/bio/12/glyco/glycan#>
+PREFIX glytoucan:  <http://www.glytoucan.org/glyco/owl/glytoucan#>
+SELECT DISTINCT ?mass ?AccessionNumber ?Entry
+FROM <http://rdf.glytoucan.org/mass>
+FROM <http://rdf.glytoucan.org/core>
+WHERE{
+    ?saccharide glytoucan:has_primary_id ?AccessionNumber .
+    ?saccharide glycan:has_resource_entry ?ResourceEntry .
+    ?ResourceEntry rdfs:seeAlso ?Entry .
+    ?saccharide glytoucan:has_derivatized_mass ?d_mass .
+    ?d_mass a <http://www.glytoucan.org/glyco/owl/glytoucan#derivatized_mass> .
+    ?d_mass glytoucan:has_mass ?mass .
+     FILTER(?mass > {{params.min}}  && ?mass < {{params.max}})
+}
+```
+## Output
+```javascript
+({
+  json({result}) {
+    return result.results.bindings.map((row) => {
+         return {
+            "AccessionNumber": row.AccessionNumber.value , 
+            "Entry":row.Entry.value , 
+            "Mass": row.mass.value
+      }
+    });
+  },
+  text({result}) {
+    return result.results.bindings.map(row).join("\n");
+  }
+})
+```
